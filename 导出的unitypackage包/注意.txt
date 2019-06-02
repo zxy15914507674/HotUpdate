@@ -1,0 +1,13 @@
+步骤:
+
+1 把该包导入到unity3d工程中
+
+2 把config.xml放在工程的根目录下
+
+3 修改config.xml的标签ConnectionString即可修改连接字符串
+
+4 修改config.xml的标签DownLoadUrl可以修改下载场景包的网址的根路径
+
+5 数据库下必须有一个名为work的表，字段有id,workaddress,字段workaddress保存的是场景包的名称,当然可以进行修改，这就需要打开SQLHelper类进行修改,分别修改里面的work类和类GetExperimentNameService中的方法GetExperimentName()中对应的内容,同时还需要找到类CheckForUpdate并修改里面的方法DownLoadFile()对应的内容
+
+6 把包导入场景后,把Prefabs文件夹下的预制体Canvas拖拽到场景中
