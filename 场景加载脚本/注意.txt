@@ -1,0 +1,5 @@
+步骤：
+1 把脚本SceneLoadManager拖拽到场景中名为LoadSceneManager的游戏物体上
+
+2 动态加载某个场景时，需要这样来调用:
+  GameObject.Find("LoadSceneManager").GetComponent<SceneLoadManager>().LoadScene("场景包名称(不加后缀名)", "场景名称")
