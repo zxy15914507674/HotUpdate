@@ -4,6 +4,7 @@ using System.IO;
 using System.Xml;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PackScenes : MonoBehaviour {
 
@@ -20,9 +21,28 @@ public class PackScenes : MonoBehaviour {
             Debug.LogError("请选择打包的场景");
             return;
         }
+        
 
+        string[] strPath = path.Split('/');
+        string SceneName;
+        if (strPath != null && strPath.Length > 0)
+        {
+            SceneName = strPath[strPath.Length - 1].Split('.')[0];
+        }
+        else {
+            SceneName = null;
+        }
+       
         //获得用户选择的路径的方法，可以打开保存面板（推荐）
-        string Path = EditorUtility.SaveFilePanel("设置场景打包后的文件名和保存路径", "SceneResources", "" + "Scene", "zxy");
+        string Path;
+        if (SceneName != null || SceneName.Length > 0)
+        {
+            Path = EditorUtility.SaveFilePanel("设置场景打包后的文件名和保存路径", "SceneResources", "" + SceneName, "zxy");
+        }
+        else {
+            Path = EditorUtility.SaveFilePanel("设置场景打包后的文件名和保存路径", "SceneResources", "" + "SceneName", "zxy");
+        }
+        
 
         if (Path == null || Path.Length == 0)
         {
@@ -60,9 +80,13 @@ public class PackScenes : MonoBehaviour {
             Debug.LogError("请选择打包的bytes格式的脚本文件");
             return;
         }
+        if(!Directory.Exists(System.Environment.CurrentDirectory + "\\SceneResources\\Scripts")){
+            Directory.CreateDirectory(System.Environment.CurrentDirectory + "\\SceneResources\\Scripts");
+        }
+
         string []pathArray = pathDirectory.Split('/');
         string fileName=pathArray[pathArray.Length-1];
-        Object mainAsset = AssetDatabase.LoadMainAssetAtPath("Assets/Dll/"+fileName);
+        Object mainAsset = AssetDatabase.LoadMainAssetAtPath("Assets/" + pathArray[pathArray.Length - 2] + "/" + fileName);
         BuildPipeline.BuildAssetBundle(mainAsset, null, System.Environment.CurrentDirectory + "\\SceneResources\\Scripts\\"+fileName.Split('.')[0]+".script",
                                BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);
 
@@ -80,9 +104,10 @@ public class PackScenes : MonoBehaviour {
             {
                 Directory.CreateDirectory(path);
             }
-
+            Scene scene = SceneManager.GetActiveScene();
+            string SceneName = scene.name;
             //选择保存的路径和名称
-            string FilePath = EditorUtility.SaveFilePanel("设置XML文件保存的路径和名称(注意与场景名称一致)", "SceneResources", "" + "myXml", "xml");
+            string FilePath = EditorUtility.SaveFilePanel("设置XML文件保存的路径和名称(注意与场景名称一致)", "SceneResources\\XML", "" + SceneName, "xml");
             if(FilePath==null||FilePath.Length==0){
                 Debug.LogError("请设置保存的文件名");
                 return;
@@ -102,9 +127,11 @@ public class PackScenes : MonoBehaviour {
       /// </summary>
       /// <param name="scripts">脚本集合</param>
       /// <param name="FilePath">XML文件保存的路径</param>
-      private static void WriteXMLFile(MonoBehaviour []scripts,string FilePath) {
-          if(!File.Exists(FilePath)){
-              FileStream stream=File.Create(FilePath);
+      private static void WriteXMLFile(MonoBehaviour[] scripts, string FilePath)
+      {
+          if (!File.Exists(FilePath))
+          {
+              FileStream stream = File.Create(FilePath);
               stream.Close();
           }
 
@@ -120,45 +147,69 @@ public class PackScenes : MonoBehaviour {
           xDoc.Save(FilePath);
 
 
-           XmlDocument doc=new XmlDocument();
-           doc.Load(FilePath);                 //加载文档
-           XmlElement root=doc.DocumentElement;     //获取根节点
-           Debug.Log("加载完毕");
-         
+          XmlDocument doc = new XmlDocument();
+          doc.Load(FilePath);                 //加载文档
+          XmlElement root = doc.DocumentElement;     //获取根节点
+          Debug.Log("加载完毕");
+
           foreach (MonoBehaviour item in scripts)
           {
-              
-              
-              if (item.gameObject.name != "Canvas" && item.gameObject.name != "EventSystem")
+              if (item.ToString().Contains("("))
               {
+
+
+                  string scriptNameTmp = item.ToString().Split(new char[] { '(', ')' })[1];
                   //因为直接输出item.ToString()的值为  游戏物体名称(脚本名称)
-                  Debug.Log(item.gameObject.name + ": " + item.ToString().Split(new char[] { '(', ')' })[1]);
-                  XmlElement gameObject = doc.CreateElement("gameObject");//插入一个gameObject节点  
+                  Debug.Log(item.gameObject.name + ":" + scriptNameTmp);
+
+                  if (!scriptNameTmp.Contains("."))
+                  {
+                      XmlElement gameObject = doc.CreateElement("gameObject");//插入一个gameObject节点  
 
 
-                  XmlElement gameObjectName=doc.CreateElement("gameObjectName");
-                  gameObjectName.InnerText = item.gameObject.name;
-                  XmlElement scriptName = doc.CreateElement("scriptName");
-                  scriptName.InnerText = item.ToString().Split(new char[] { '(', ')' })[1];
+                      XmlElement gameObjectName = doc.CreateElement("gameObjectName");
+                      gameObjectName.InnerText = item.gameObject.name;
+                      XmlElement scriptName = doc.CreateElement("scriptName");
+                      scriptName.InnerText = item.ToString().Split(new char[] { '(', ')' })[1];
 
 
-                  gameObject.AppendChild(gameObjectName);
-                  gameObject.AppendChild(scriptName);
+                      gameObject.AppendChild(gameObjectName);
+                      gameObject.AppendChild(scriptName);
 
 
 
 
-                  root.AppendChild(gameObject);       //把新节点添加到根节点下  
+                      root.AppendChild(gameObject);       //把新节点添加到根节点下  
 
-                  doc.Save(FilePath);//保存文档  
+                      doc.Save(FilePath);//保存文档
+                  }
               }
-             
+
           }
 
-          
-          
-          
       }
+
+
+
+     
+     [MenuItem("Custom Editor/打包场景资源(如预制体，图片等)")]
+     public static void CreateSceneResource(){
+         //清空一下缓存  
+         Caching.CleanCache();
+
+         //保存资源文件文件的路径
+         Scene scene = SceneManager.GetActiveScene();
+         string SceneName = scene.name;
+         string path = System.Environment.CurrentDirectory + "\\SceneResources\\OtherResoruces\\"+SceneName;
+         if (!Directory.Exists(path))
+         {
+             Directory.CreateDirectory(path);
+         }
+
+         //进行场景资源的打包
+         BuildPipeline.BuildAssetBundles(path, BuildAssetBundleOptions.None,BuildTarget.StandaloneWindows);
+         AssetDatabase.Refresh();
+     }
     
 
 }
