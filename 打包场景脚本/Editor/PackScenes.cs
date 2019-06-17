@@ -21,7 +21,10 @@ public class PackScenes : MonoBehaviour {
             Debug.LogError("请选择打包的场景");
             return;
         }
-        
+        if (!Directory.Exists(System.Environment.CurrentDirectory + "\\SceneResources"))
+        {
+            Directory.CreateDirectory(System.Environment.CurrentDirectory + "\\SceneResources");
+        }
 
         string[] strPath = path.Split('/');
         string SceneName;
