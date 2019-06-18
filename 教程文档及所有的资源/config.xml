@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<root>
+  <!--数据库连接字符串-->
+  <ConnectionString>data source=119.23.228.19;database=unity;user id=root;password=root;charset=utf8</ConnectionString>
+  <!--文件下载的根路径-->
+  <DownLoadUrl>http://119.23.228.19:8080/unity_image/7/</DownLoadUrl>
+  <!--已经下载的文件名称-->
+  <fileNames>
+    <!--进行测试时，不能把这个标签给删了-->
+    
+  </fileNames>
+</root>
