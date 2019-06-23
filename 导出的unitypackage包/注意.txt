@@ -11,3 +11,11 @@
 5 数据库下必须有一个名为work的表，字段有id,workaddress,字段workaddress保存的是场景包的名称,当然可以进行修改，这就需要打开SQLHelper类进行修改,分别修改里面的work类和类GetExperimentNameService中的方法GetExperimentName()中对应的内容,同时还需要找到类CheckForUpdate并修改里面的方法DownLoadFile()对应的内容
 
 6 把包导入场景后,把Prefabs文件夹下的预制体Canvas拖拽到场景中
+
+
+
+
+
+//修改bug后
+
+work表新增一个worktype的字段，用来保存实验场景的类型(如 1:化学  2: 物理  3 :生物)
