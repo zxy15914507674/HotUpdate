@@ -1,13 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <root>
+  <!--数据库连接字符串是否进行加密  设置Yes(或者yes)则为使用加密   设置No(或者no)则不使用加密 -->
+  <!-- data source=119.23.228.19;database=unity;user id=root;password=root;charset=utf8 -->
+  <UseStringSecurity>No</UseStringSecurity>
   <!--数据库连接字符串-->
   <ConnectionString>data source=119.23.228.19;database=unity;user id=root;password=root;charset=utf8</ConnectionString>
   <!--文件下载的根路径-->
-  <DownLoadUrl>http://119.23.228.19/unity_image/7/</DownLoadUrl>
+  <DownLoadUrl>http://119.23.228.19:8080/unity_image/7/</DownLoadUrl>
   <!--已经下载的文件名称-->
   <fileNames>
-    <!--进行测试时，不能把这个标签给删了-->
-    <fileName>场景1.zip</fileName>
-    <fileName>场景2.zip</fileName>
+    <fileName>实验3.zip</fileName>
+    <fileName>动态资源加载测试.zip</fileName>
+    
   </fileNames>
+  <SceneType>
+    <Chemistry>
+      <Scenes>
+        <SceneName>UpdateScenesResources</SceneName>
+        <fileName>动态资源加载测试.zip</fileName>
+      </Scenes>
+    </Chemistry>
+    <Physics>
+     
+    </Physics>
+    <Biology>
+      <Scenes>
+        <SceneName>Scenes3</SceneName>
+        <fileName>实验3.zip</fileName>
+      </Scenes>
+    </Biology>
+  </SceneType>
 </root>
